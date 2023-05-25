@@ -9,3 +9,4 @@ edition = "2021"
 eyre = "0.6"
 tokio = { version = "1.25", features = ["full"] }
 sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "postgres", "offline", "chrono", "uuid", "json"] }
+chrono = "0.4.24"
