@@ -14,5 +14,24 @@ services:
     volumes:
       - postgres-db:/var/lib/postgresql/data
       - ./postgres_db_init.sql:/docker-entrypoint-initdb.d/postgres_db_init.sql
+  wtb-server:
+    image: wishlist-servise
+    build:
+      context: "."
+      dockerfile: ./server/Dockerfile
+    depends_on:
+      wtb-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/healthz" ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    ports:
+      - 8080:8080
+    environment:
+      WTB_listen_addr: 0.0.0.0:8080
+      WTB_database_url: postgres://postgres:password@localhost/want_to_buy
 volumes:
   postgres-db:
