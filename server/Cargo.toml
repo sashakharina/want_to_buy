@@ -10,3 +10,6 @@ eyre = "0.6"
 tokio = { version = "1.25", features = ["full"] }
 sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "postgres", "offline", "chrono", "uuid", "json"] }
 chrono = "0.4.24"
+config = "0.13.3"
+serde = "1.0.163"
+confy = "0.5.1"

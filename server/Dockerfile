@@ -12,6 +12,7 @@ COPY ./server/src ./src
 COPY ./server/config.toml ./config.toml
 COPY ./server/Cargo.toml ./Cargo.toml
 COPY ./server/Cargo.lock ./Cargo.lock
+COPY ./server/config.toml ./config.toml
 
 # Build
 RUN cargo build

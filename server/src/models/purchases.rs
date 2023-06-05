@@ -18,7 +18,7 @@ pub struct Purchase {
     pub list_id: u64,
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub price_amount Option<i64>,
+    pub price_amount: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub price_currency: Option<String>,
     pub priority: u16,
