@@ -14,7 +14,7 @@ pub async fn create_user (
     context: Data<Context>,
 ) -> Result<Json<LoginResponse>, Error> {
     let mut request = request.into_inner();
-    request.password = bcrypt::hash("password").unwrap();
+    request.password = bcrypt::hash(request.password).unwrap();
     let mut conn = context.db_pool.acquire().await
         .map_err(|e| actix_web::error::ErrorInternalServerError(e))?;
     let user = User::insert_from_request(request, &mut conn).await
@@ -36,7 +36,7 @@ pub async fn login (
     .map_err(|e| actix_web::error::ErrorInternalServerError(e))?
     .ok_or(actix_web::error::ErrorNotFound("user with such email doesn't exist".to_owned()))?;
 
-    if !pwhash::bcrypt::verify(&request.password, &user.password) {
+    if pwhash::bcrypt::verify(&request.password, &user.password) {
         return Err(actix_web::error::ErrorForbidden("incorrect password".to_owned()));
     }
 

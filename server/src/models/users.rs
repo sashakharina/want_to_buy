@@ -136,6 +136,8 @@ impl User {
             "INSERT INTO users (
                 nickname, email, password, phone_number, date_of_birth
             ) VALUES ($1, $2, $3, $4, $5)
+            ON CONFLICT (email)
+            DO NOTHING
             RETURNING *",
         )
         .bind(req.nickname)
