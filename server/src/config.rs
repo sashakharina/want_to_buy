@@ -5,7 +5,7 @@ use std::{collections::HashMap, net::SocketAddr, net::IpAddr, net::Ipv4Addr};
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Config {
     pub database_url: String,
-    pub currencies: HashMap<String, bool>,
+    pub currencies: HashMap<String, String>,
     pub currency_api_key: String,
     pub listen_addr: SocketAddr,
 }

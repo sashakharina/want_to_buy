@@ -2,6 +2,7 @@ use sqlx::{postgres::PgPool, error::Error};
 
 use crate::config;
 
+#[derive(Clone, Debug)]
 pub struct Context {
     pub db_pool: PgPool,
     pub config: config::Config,

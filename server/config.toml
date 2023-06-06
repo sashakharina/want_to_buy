@@ -2,6 +2,6 @@ database_url = "postgres://postgres:password@wtb-postgres/want_to_buy"
 currency_api_key = "2xFTEex93fYaSk1x74wM9rTvMfMm2i5RCbOE3zdn"
 listen_addr = "0.0.0.0:8080"
 
-currencies.usd = true
-currencies.uah = true
-currencies.eur = true
+currencies.usd = "american dollar"
+currencies.uah = "ukrainian grivna"
+currencies.eur = "eur"

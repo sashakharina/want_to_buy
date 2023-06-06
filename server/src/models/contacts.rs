@@ -9,7 +9,7 @@ pub struct Contacts {
     pub subscriber_id: u64,
     pub subscribing_id: u64,
     pub is_accept: bool,
-    pub created_at: DateTime<UTC>,
+    pub created_at: DateTime<Utc>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub updated_at: Option<DateTime<Utc>>,
 }
