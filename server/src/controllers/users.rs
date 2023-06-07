@@ -1,7 +1,7 @@
 use actix_web::{
     get, post, delete,
     web::{Data, Json, Path, Header},
-    Scope, Error, http::header,
+    Scope, Error, http::header, HttpRequest, HttpResponse, Responder,
 };
 use pwhash::bcrypt;
 
@@ -36,7 +36,7 @@ pub async fn login (
     .map_err(|e| actix_web::error::ErrorInternalServerError(e))?
     .ok_or(actix_web::error::ErrorNotFound("user with such email doesn't exist".to_owned()))?;
 
-    if pwhash::bcrypt::verify(&request.password, &user.password) {
+    if !pwhash::bcrypt::verify(&request.password, &user.password) {
         return Err(actix_web::error::ErrorForbidden("incorrect password".to_owned()));
     }
 
@@ -46,13 +46,26 @@ pub async fn login (
     Ok(Json(LoginResponse { user_info: (user), session_id: (session_id), lists: vec![] }))
 }
 
-// #[delete("logout")]
-// pub async fn logout (
-//     headers: Header<header::>,
-//     context: Data<Context>,
-// ) -> Result<HttpResponse, Error> {
-//    // Ok(HttpResponse::)
-// }
+#[delete("logout")]
+pub async fn logout (
+    req: HttpRequest,
+    context: Data<Context>,
+) -> impl Responder {
+    let auth_header = req
+    .headers()
+    .get(header::AUTHORIZATION);
+
+    if auth_header.is_none() {
+        return HttpResponse::Unauthorized();
+    }
+    let session_id = auth_header.unwrap().to_str().unwrap();
+
+    let mut conn = context.db_pool.acquire().await.unwrap();
+    match Session::drop_session(session_id, &mut conn).await{
+        Ok(_) => HttpResponse::Ok(),
+        Err(_) => HttpResponse::InternalServerError() 
+    }
+}
 
 #[get("public/{email}")]
 pub async fn get_user_public_info (
@@ -72,5 +85,5 @@ pub fn scope() -> Scope {
         .service(create_user)
         .service(get_user_public_info)
         .service(login)
-        //.service(factory)
+        .service(logout)
 }
