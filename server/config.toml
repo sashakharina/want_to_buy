@@ -5,3 +5,5 @@ listen_addr = "0.0.0.0:8080"
 currencies.usd = "american dollar"
 currencies.uah = "ukrainian grivna"
 currencies.eur = "eur"
+
+expiration_time_in_min = 5

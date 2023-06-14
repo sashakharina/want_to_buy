@@ -1,6 +1,8 @@
+use std::cmp::Ordering;
+
 use actix_web::{
     get, post, delete,
-    web::{Data, Json, Path, Header},
+    web::{Data, Json, Path},
     Scope, Error, http::header, HttpRequest, HttpResponse, Responder,
 };
 use pwhash::bcrypt;
@@ -86,4 +88,36 @@ pub fn scope() -> Scope {
         .service(get_user_public_info)
         .service(login)
         .service(logout)
+}
+
+pub async fn is_authorised (
+    request: HttpRequest,
+    context: &Context,
+) -> Result<Session, Error> {
+    let auth_header = request
+    .headers()
+    .get(header::AUTHORIZATION);
+
+    if auth_header.is_none() {
+        return Err(actix_web::error::ErrorUnauthorized("session token missing"));
+    }
+
+    let session_id = auth_header.unwrap().to_str().unwrap();
+
+    let mut conn = context.db_pool.acquire().await
+        .map_err(|e| actix_web::error::ErrorInternalServerError(e))?;
+
+    let session = Session::get_session(session_id, &mut conn).await
+        .map_err(|e| actix_web::error::ErrorInternalServerError(e))?
+        .ok_or(actix_web::error::ErrorUnauthorized("session token is not valid"))?;
+    if chrono::offset::Utc::now()
+        .signed_duration_since(session.created_at)
+        .cmp(&chrono::Duration::minutes(context.config.expiration_time)) == Ordering::Greater {
+
+        Session::drop_session(session_id, &mut conn).await
+            .map_err(|e| actix_web::error::ErrorInternalServerError(e))?;
+
+        return Err(actix_web::error::ErrorUnauthorized("session token expired"));
+    }
+    Ok(session)
 }

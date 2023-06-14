@@ -13,9 +13,7 @@ static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!(); // defaults to "./m
 #[tokio::main]
 async fn main() -> Result<(), eyre::Report>{
     let config = config::Config::new()?;
-    // let hash = pwhash::bcrypt::hash("qwe123").unwrap();
-    // let is_authenticate = pwhash::bcrypt::verify("qwe123", &hash);
-    // println!("{}", is_authenticate);
+    
     print!("{:?}", config);
     let mut conn = PgConnection::connect(config.database_url.as_str()).await?;
     MIGRATOR.run(&mut conn).await?;
