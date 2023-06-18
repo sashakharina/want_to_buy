@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{Postgres, error::Error, pool::PoolConnection};
+use sqlx::{Postgres, error::Error, pool::PoolConnection, Executor};
 
 #[derive(sqlx::FromRow, Deserialize, Serialize, Clone, Eq, PartialEq, Debug)]
 #[serde(rename_all = "PascalCase")]
@@ -27,6 +27,17 @@ impl Currency {
         .bind(self.description);
         
         let res = query.fetch_optional(&mut conn).await?;
+        Ok(res)
+    }
+
+    pub async fn get_all(
+        conn: impl Executor<'_, Database = Postgres>,
+    ) -> Result<Vec<Self>, Error>{
+        let query = sqlx::query_as(
+            "SELECT * FROM currencies",
+        );
+        
+        let res = query.fetch_all(conn).await?;
         Ok(res)
     }
 }

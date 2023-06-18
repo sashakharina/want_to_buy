@@ -7,7 +7,7 @@ use actix_web::{
 };
 use pwhash::bcrypt;
 
-use crate::models::{User, CreateUserRequest, Session, UserPublic, LoginRequest, LoginResponse};
+use crate::models::{User, CreateUserRequest, Session, UserPublic, LoginRequest, LoginResponse, List};
 use crate::context::Context;
 
 #[post("")]
@@ -45,7 +45,10 @@ pub async fn login (
     let session_id = Session::insert_session(user.id, &mut conn).await
         .map_err(|e| actix_web::error::ErrorInternalServerError(e))?.session_id;
 
-    Ok(Json(LoginResponse { user_info: (user), session_id: (session_id), lists: vec![] }))
+    let lists = List::get_all_by_user(user.id, &mut conn).await
+        .map_err(|e| actix_web::error::ErrorInternalServerError(e))?;
+
+    Ok(Json(LoginResponse { user_info: (user), session_id: (session_id), lists: lists }))
 }
 
 #[delete("logout")]
@@ -112,7 +115,7 @@ pub async fn is_authorised (
         .ok_or(actix_web::error::ErrorUnauthorized("session token is not valid"))?;
     if chrono::offset::Utc::now()
         .signed_duration_since(session.created_at)
-        .cmp(&chrono::Duration::minutes(context.config.expiration_time)) == Ordering::Greater {
+        .cmp(&chrono::Duration::minutes(context.config.expiration_time_in_min)) == Ordering::Greater {
 
         Session::drop_session(session_id, &mut conn).await
             .map_err(|e| actix_web::error::ErrorInternalServerError(e))?;

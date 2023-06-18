@@ -61,16 +61,16 @@ impl List {
         Ok(res)
     }
 
-    pub async fn get_with_purchases (
-        user_id: i64,
+    pub async fn get_by_id (
+        id: i64,
         conn: impl Executor<'_, Database = Postgres>
     ) -> Result<Option<Self>, Error>{
         let query = sqlx::query_as(
-            "SELECT * FROM lists WHERE user_id = $1",
+            "SELECT * FROM lists WHERE id = $1",
         )
-        .bind(user_id);
+        .bind(id);
         
-        let res = query.fetch_all(conn).await?;
+        let res = query.fetch_optional(conn).await?;
         Ok(res)
     }
 }

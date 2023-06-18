@@ -2,6 +2,7 @@ use sqlx::{postgres::{PgConnection}, Connection};
 use actix_web::{HttpServer, App, web::Data, middleware::Logger, get};
 use futures_util::TryFutureExt;
 use crate::models::Currency;
+use actix_cors::Cors;
 
 mod config;
 mod context;
@@ -28,10 +29,19 @@ async fn main() -> Result<(), eyre::Report>{
     }
 
     let app = HttpServer:: new ( move || {
+        let cors = Cors::default()
+        .allow_any_origin()
+        .allow_any_method()
+        .allow_any_header()
+        .max_age(3600);
+
+
         App::new()
         .wrap(Logger::default())
+        .wrap(cors)
         .app_data(Data::new(context.clone()))
         .service(health)
+        .service(get_available_currencies)
         .configure(controllers::configure)
     })
     .bind(config.listen_addr)?;
@@ -48,4 +58,15 @@ async fn main() -> Result<(), eyre::Report>{
 #[get("/health")]
 async fn health() -> &'static str {
     "Status OK"
+}
+
+#[get("/currencies")]
+pub async fn get_available_currencies (
+    context: Data<context::Context>,
+) -> Result<actix_web::web::Json<Vec<Currency> > , actix_web::Error> {
+    let mut conn = context.db_pool.acquire().await
+        .map_err(|e| actix_web::error::ErrorInternalServerError(e))?;
+    let currencies = Currency::get_all(&mut conn).await
+        .map_err(|e| actix_web::error::ErrorInternalServerError(e))?;
+    Ok(actix_web::web::Json(currencies.into()))
 }

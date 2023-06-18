@@ -4,18 +4,22 @@
       :to="{ name: $routes.folderPage, params: { id: 1 } }"
   >
     <span class="home-folder__title">
-      Їжа
+      Музичне
     </span>
     <icon :name="$icons.folder" />
     <div class="home-folder__actions">
-      <app-button :icon-left="$icons.link" />
-      <app-button :icon-left="$icons.trash" />
+      <app-button :icon-left="$icons.lockClosed" />
+      <app-button :icon-left="$icons.trash" @click.prevent.stop="emit('delete-folder')" />
     </div>
   </router-link>
 </template>
 
 <script lang="ts" setup>
 import { Icon, AppButton } from '@/common'
+
+const emit = defineEmits<{
+  (e: 'delete-folder'): void
+}>()
 </script>
 
 <style lang="scss" scoped>

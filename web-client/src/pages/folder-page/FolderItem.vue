@@ -12,10 +12,16 @@
         Сінтезатор
       </span>
       <span class="folder-item__price-text">
-        2000 UAH
+        10000 UAH
       </span>
     </div>
     <div class="folder-item__hearts">
+      <icon
+          v-for="(item, idx) in filledHearts"
+          :key="idx"
+          class="folder-item__hearts-icon"
+          :name="$icons.filledHeart"
+      />
       <icon
           v-for="(item, idx) in hearts"
           :key="idx"
@@ -26,10 +32,14 @@
   </div>
 </template>
 
+
 <script lang="ts" setup>
 import { Icon } from '@/common'
-const HEARTS_COUNT = 7
+const HEARTS_COUNT = 2
+const FILLED_HEARTS_COUNT = 5
+
 const hearts = Array(HEARTS_COUNT).fill(0)
+const filledHearts = Array(FILLED_HEARTS_COUNT).fill(0)
 </script>
 
 <style lang="scss" scoped>
@@ -45,7 +55,7 @@ const hearts = Array(HEARTS_COUNT).fill(0)
 }
 
 .folder-item__img {
-  width: toRem(376);
+  width: toRem(336);
   height: toRem(250);
   object-fit: cover;
   margin: 0 auto;
@@ -73,6 +83,8 @@ const hearts = Array(HEARTS_COUNT).fill(0)
 .folder-item__hearts {
   display: flex;
   gap: toRem(6);
+  fill: black;
+  color: black;
 }
 
 .folder-item__hearts-icon {

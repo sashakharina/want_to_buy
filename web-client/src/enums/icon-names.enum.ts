@@ -115,6 +115,7 @@ export enum ICON_NAMES {
   hand = 'hand',
   hashtag = 'hashtag',
   heart = 'heart',
+  filledHeart = 'filled-heart',
   home = 'home',
   identification = 'identification',
   inboxIn = 'inbox-in',

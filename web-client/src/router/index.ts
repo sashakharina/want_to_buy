@@ -5,12 +5,7 @@ import {ROUTE_NAMES} from '@/enums'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/:catchAll(.*)',
-    redirect: { name: ROUTE_NAMES.homePage },
-  },
-  {
-    path: '/ui-kit',
-    name: ROUTE_NAMES.uiKit,
-    component: () => import('@/pages/UiKitPage.vue'),
+    redirect: { name: ROUTE_NAMES.loginPage },
   },
   {
     path: '/login',

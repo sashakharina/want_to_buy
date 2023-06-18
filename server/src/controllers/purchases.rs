@@ -4,6 +4,7 @@ use actix_web::{
     Scope,
 };
 
+
 pub fn scope() -> Scope {
     actix_web::web::scope("purchases")
         //.service(get_own)
